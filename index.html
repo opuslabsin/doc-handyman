@@ -198,7 +198,7 @@ This guide assumes you have some experience in setting up PHP based web applicat
 
     <p>The server on which you are going to deploy the backend must fulfill the following requirements:</p>
     <ul>
-      <li>PHP &gt;= 7.1.2</li>
+      <li>PHP &gt;= 7.2</li>
       <li>Mysql 5.7</li>
       <li>OpenSSL PHP Extension</li>
       <li>PDO PHP Extension</li>
@@ -211,7 +211,7 @@ This guide assumes you have some experience in setting up PHP based web applicat
     <h3 id="deploying-backend">Deploying Backend</h3>
     <p>Follow these steps:</p>
     <ul>
-      <li>Extract the <code class="highlighter-rouge">handyman.zip</code> on your server</li>
+      <li>Extract the <code class="language-plaintext highlighter-rouge">handyman.zip</code> on your server</li>
       <li>For example if your domain is http://handyman.com then you will be able to access the backend as http://handyman.com/handyman/public</li>
     </ul>
   </li>
@@ -238,19 +238,28 @@ This guide assumes you have some experience in setting up PHP based web applicat
     </ul>
   </li>
   <li><strong>Push Notification related</strong>:
+Create two apps in OneSignal console, one for user and one for provider
     <ul>
-      <li>FCM_SERVER_KEY</li>
-      <li>FCM_SENDER_ID</li>
+      <li>ONESIGNAL_APP_ID_CUSTOMER - Your OneSignal App ID that you created for customer app, <a href="https://documentation.onesignal.com/docs/accounts-and-keys#section-app-id">https://documentation.onesignal.com/docs/accounts-and-keys#section-app-id</a></li>
+      <li>ONESIGNAL_REST_API_CUSTOMER - OneSignal configuration for customer app</li>
+      <li>ONESIGNAL_APP_ID_PROVIDER - OneSignal configuration for provider app</li>
+      <li>ONESIGNAL_REST_API_PROVIDER - OneSignal configuration for provider app</li>
     </ul>
   </li>
   <li><strong>Social Login related</strong>:
     <ul>
-      <li>FIREBASE_ISS: Required to succefully login through FB/Google, Value: <code class="highlighter-rouge">https://securetoken.google.com/&lt;firebase-project-id&gt;</code>. If not setup properly authentication in your app will not work properly.</li>
+      <li>FIREBASE_ISS: Required to succefully login through Apple Login(only available on ios 13), Value: <code class="language-plaintext highlighter-rouge">https://securetoken.google.com/&lt;firebase-project-id&gt;</code>. If not setup properly authentication in your app will not work properly.</li>
+      <li>GOOGLE_CLIENT_ID: This will be used for Google authentication in android apps for user and provider. You will find the key in firebase console</li>
+      <li>GOOGLE_IOS_CLIENT_ID: This will be used for Google authentication in ios app for user. You will find the key in firebase console under iOS App section that you will create for the project.</li>
+      <li>GOOGLE_IOS_PROVIDER_CLIENT_ID: This will be used for Google authentication in ios app for service provider. You will find the key in firebase console under iOS App section that you will create for the project.</li>
+      <li>FACEBOOK_APP_ID: Your facebook app id</li>
+      <li>FACEBOOK_APP_SECRET: Your facebook app secret</li>
     </ul>
   </li>
-  <li><strong>Logo</strong>:
+  <li><strong>Stripe Payment Gateway</strong>:
     <ul>
-      <li>APP_LOGO: Enter the url of your logo, this logo will be displayed in backend panel</li>
+      <li>STRIPE_KEY</li>
+      <li>STRIPE_SECRET</li>
     </ul>
   </li>
 </ul>
@@ -258,23 +267,23 @@ This guide assumes you have some experience in setting up PHP based web applicat
 <ol>
   <li>
     <h3 id="database">Database</h3>
-    <p>In accompanied source code you will find a sql file named handyman.sql. Create the database and then import the file in your database.</p>
+    <p>In accompanied source code you will find a sql file named <code class="language-plaintext highlighter-rouge">handyman.sql</code>. Create the database and then import the file in your database.</p>
   </li>
   <li>
     <h3 id="admin-panel">Admin Panel</h3>
     <p>Admin panel is developed in Angular 7 and shipped in seperate folder. Normally you will not need to compile the files again for your deployment. If you are not going to make any change in Admin Panel source code, you can skip the angular compiling step.
   Following change in the file will still be required in any case:</p>
     <ul>
-      <li>Open <code class="highlighter-rouge">public/admin/main.e0dc3b111fbb1158753b.js</code> or if you do not see this specific file open <code class="highlighter-rouge">public/admin/main.&lt;some-random-code&gt;.js</code> file in any editor of your choice</li>
-      <li>Search for <code class="highlighter-rouge">http://opuslabs.in:9085/api/admin</code> and replace it with your backend url for example <code class="highlighter-rouge">http://handyman.com/handyman/public/api/admin</code></li>
+      <li>Open <code class="language-plaintext highlighter-rouge">public/admin/main.e0dc3b111fbb1158753b.js</code> or if you do not see this specific file open <code class="language-plaintext highlighter-rouge">public/admin/main.&lt;some-random-code&gt;.js</code> file in any editor of your choice</li>
+      <li>Search for <code class="language-plaintext highlighter-rouge">http://opuslabs.in:9085/api/admin</code> and replace it with your backend url for example <code class="language-plaintext highlighter-rouge">http://handyman.com/handyman/public/api/admin</code></li>
       <li>This is a just a quicker way to make ready your admin panel so that you do not have to compile whole angular project, if you want to customize source as per your requiremtn you will need to follow steps mentione below. If you do not want customization you can stop at these step.</li>
-      <li>Open <code class="highlighter-rouge">handman-admin.zip</code>, it’s an Angualr 7 based project</li>
+      <li>Open <code class="language-plaintext highlighter-rouge">handman-admin.zip</code>, it’s an Angualr 7 based project</li>
       <li>If you are not familiar with Angular 7 we will suggest you to get basic idea from <a href="https://angular.io/guide/quickstart">https://angular.io/guide/quickstart</a></li>
-      <li>If you need to change api url, open <code class="highlighter-rouge">src/app/@core/models/constants.model.ts</code> and update the value of <code class="highlighter-rouge">API_BASE_URL</code>  variable</li>
-      <li>After making the required changes issue a command <code class="highlighter-rouge">ng build --prod</code></li>
-      <li>Now angular would have created/updated the <code class="highlighter-rouge">dist</code> folder in root with updated compiled files</li>
-      <li>You need to copy all the files in <code class="highlighter-rouge">dist</code> folder to you Laravel’s <code class="highlighter-rouge">public/admin</code> folder.</li>
-      <li>For example <code class="highlighter-rouge">cp -r handyman-angular/dist/* handyman/public/admin/</code> assuming <code class="highlighter-rouge">handyman-angular</code> is your angular project folder and <code class="highlighter-rouge">handyman</code> is your laravel project folder</li>
+      <li>If you need to change api url, open <code class="language-plaintext highlighter-rouge">src/app/@core/models/constants.model.ts</code> and update the value of <code class="language-plaintext highlighter-rouge">API_BASE_URL</code>  variable</li>
+      <li>After making the required changes issue a command <code class="language-plaintext highlighter-rouge">ng build --prod</code></li>
+      <li>Now angular would have created/updated the <code class="language-plaintext highlighter-rouge">dist</code> folder in root with updated compiled files</li>
+      <li>You need to copy all the files in <code class="language-plaintext highlighter-rouge">dist</code> folder to you Laravel’s <code class="language-plaintext highlighter-rouge">public/admin</code> folder.</li>
+      <li>For example <code class="language-plaintext highlighter-rouge">cp -r handyman-angular/dist/* handyman/public/admin/</code> assuming <code class="language-plaintext highlighter-rouge">handyman-angular</code> is your angular project folder and <code class="language-plaintext highlighter-rouge">handyman</code> is your laravel project folder</li>
     </ul>
   </li>
 </ol>
@@ -285,106 +294,111 @@ This guide assumes you have some experience in setting up PHP based web applicat
     <h3 id="setup-firebase-and-api-keys">Setup Firebase and Api keys</h3>
     <ul>
       <li>Login to http://console.firebase.google.com</li>
-      <li>Click on “Add project” to add new project -&gt; provide project name as you like and hit Create Project.</li>
-      <li>Now you have to Register apps in this project. Click “Add app” -&gt; choose platform Android</li>
-      <li>Each app has its unique ID known as “Package name” or “ApplicationId”. For more info on how to name one visit https://developer.android.com/studio/build/application-id</li>
-      <li>Enter package name as asked on firebase console(once for User’s app, Restaurant’s app and Driver’s app. ps-sequence doesnt matter).</li>
-      <li>Set a nickname(optional, but we’ll add total of three apps so..)</li>
-      <li>Enter your app signing certificate(Optional but important in order to make features work like social login and otp verification. here is how to have one -&gt; https://developers.google.com/android/guides/client-auth)</li>
+      <li>Click on <code class="language-plaintext highlighter-rouge">Add project</code> to add new project -&gt; provide project name as you like and hit Create Project.</li>
+      <li>Now you have to Register apps in this project. Click <code class="language-plaintext highlighter-rouge">Add app</code> and choose platform Android</li>
+      <li>Each app has its unique ID known as <code class="language-plaintext highlighter-rouge">Package name</code> or <code class="language-plaintext highlighter-rouge">ApplicationId</code>. For more info on how to name one visit https://developer.android.com/studio/build/application-id</li>
+      <li>Enter package name as asked on firebase console(once for User’s app and then for  Service Provider’s app)</li>
+      <li>Enter your app signing certificate(<code class="language-plaintext highlighter-rouge">SHA1</code>)(Optional but important in order to make features work like social login and otp verification. here is how to have one -&gt; https://developers.google.com/android/guides/client-auth)</li>
       <li>Click Register app. Upon succesful registration of app you’ll be provided with your configuration file(google-services.json) for that app.</li>
-      <li>Next click continue or skip to proceed and Repeat this step 2 more times to register app for Restaurant’s application and Driver’s application</li>
-      <li>Upon registering 3 applications in your firebase project you should have 3 applicationIds and 3 configuration files(google-services.json).</li>
+      <li>Upon registering 2 applications in your firebase project you should have 2 applicationIds and 2 configuration files(google-services.json).</li>
       <li>Now for api keys visit https://console.cloud.google.com/cloud-resource-manager</li>
       <li>Select the project you just created in firebase</li>
-      <li>Navigate to “Api and Services” section and click “ENABLE APIS AND SERVICES”</li>
-      <li>Now Search and Enable 3 apis -&gt; maps sdk for android, places sdk for android and directions api.</li>
-      <li>Go to credentails and copy “Android key” and “Browser key”</li>
+      <li>Navigate to <code class="language-plaintext highlighter-rouge">Api and Services</code> section and click “ENABLE APIS AND SERVICES”</li>
+      <li>Now Search and Enable these apis: <code class="language-plaintext highlighter-rouge">Maps Javascript</code>, <code class="language-plaintext highlighter-rouge">Places API</code>, <code class="language-plaintext highlighter-rouge">Directions API</code>, <code class="language-plaintext highlighter-rouge">Distance Matrix API</code>, <code class="language-plaintext highlighter-rouge">Geocoding API</code></li>
+      <li>Go to credentails and copy <code class="language-plaintext highlighter-rouge">Browser key</code></li>
     </ul>
   </li>
   <li>
     <h3 id="install-nodejs">Install Node.js</h3>
     <p>You must have <strong>Node.js</strong> installed on your system to begin building our app. Please follow the following step if nodejs is not installed on your system. If already done, you can skip this step</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Note: Install Node.js version 8 or above on your system. 
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Note: Install Node.js version 8. 
 </code></pre></div>    </div>
 
     <p>Download the Node.js as per your operating system from <a href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a>
 To ensure that you have correct version of nodejs installed, from the command line issue the following command</p>
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>node -v
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>node -v
 </code></pre></div>    </div>
-    <p>If you see the string containing version number greater than 8, you are good to go. If you get <code class="highlighter-rouge">command not found error</code>, that means nodejs is not properly installed on your system. You’ll need to troubleshoot the problem.</p>
-    <h6 id="you--may-be-able-to-use-node-version-lessser-than-8-but-we-havent-tested-the-app-with-these-versions"><strong>You  may be able to use node version lessser than 8 but we haven’t tested the app with these versions</strong></h6>
+    <p>If you see the string containing version number greater than 8, you are good to go. If you get <code class="language-plaintext highlighter-rouge">command not found error</code>, that means nodejs is not properly installed on your system. You’ll need to troubleshoot the problem.</p>
   </li>
   <li>
     <h3 id="install-ionic-and-cordova">Install ionic and cordova</h3>
     <p>In order to build our app you need to have installed ionic and cordova on your system. To install these packages issue the following command from command line:</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> npm install -g ionic@3.9.2 cordova
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> npm install -g ionic@3.9.2 cordova
 </code></pre></div>    </div>
 
     <p>This will install the ionic and cordova programs on your system. To ensure that you have successfully installed both the programs, issue following command from the command line</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ionic -v &amp;&amp; cordova -v
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ionic -v &amp;&amp; cordova -v
 </code></pre></div>    </div>
 
-    <p>If version number gets printed on the console, you are good to go. If you get <code class="highlighter-rouge">command not found error</code>, that means that these programs didn’t get properly installed on your system. You’ll need to troubleshoot the problem.</p>
+    <p>If version number gets printed on the console, you are good to go. If you get <code class="language-plaintext highlighter-rouge">command not found error</code>, that means that these programs didn’t get properly installed on your system. You’ll need to troubleshoot the problem.</p>
 
-    <p><strong>Make sure you do not accidentally install ionic-v4(beta)</strong></p>
+    <p><strong>Make sure you do not accidentally install Ionic version 4 or above.</strong></p>
+
+    <p><strong>After setup make sure these versions are installed in your system:</strong></p>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Node</code> - 8.9.3</li>
+      <li><code class="language-plaintext highlighter-rouge">Cordova</code> - 8.1.2</li>
+      <li><code class="language-plaintext highlighter-rouge">Ionic</code> - 3.9.2</li>
+    </ul>
   </li>
   <li>
     <h3 id="seting-up-ionic-application">Seting up Ionic application</h3>
-    <p>Add configuration files(google-services.json) aquired from step 1 into respective project’s root folder.
- You’ll find config.xml, open to edit “id” parameter in very first line with applicationId you creted in step 1 in firebase console.
- Specify application’s name between tag name <name>here</name>.
- Next file -&gt; src/app/app.config.ts
- Here change appName(name that displayes inside application)
- change apiBase with your base url.. such as -&gt; http://yourbaseurl.com/api/
- change googleApiKey with the Browser key obtained in step 1.</p>
+    <p>Add configuration files(<code class="language-plaintext highlighter-rouge">google-services.json</code>) acquired from <code class="language-plaintext highlighter-rouge">Step 1</code> into respective project’s root folder.
+ You’ll find <code class="language-plaintext highlighter-rouge">config.xml</code>, open to edit “id” parameter in very first line with applicationId(also known as packgae name) you creted in <code class="language-plaintext highlighter-rouge">Step 1</code> in firebase console.
+ Specify application’s name between tag name <name>App Name</name>.</p>
 
-    <p><strong><code class="highlighter-rouge">cordova-plugin-googleplus</code></strong></p>
+    <p>Facebook login setup:</p>
     <ul>
-      <li>
-        <p>Run the following command to add the support for google login</p>
+      <li>Edit values for <code class="language-plaintext highlighter-rouge">APP_ID</code> and <code class="language-plaintext highlighter-rouge">APP_NAME</code> placehodlers in config.xml and package.json for facebook setup.</li>
+    </ul>
 
-        <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; ionic cordova plugin add cordova-plugin-googleplus --save --variable WEB_APPLICATION_CLIENT_ID=mywebapplicationclientid
-&gt; npm install --save @ionic-native/google-plus
-</code></pre></div>        </div>
+    <p>Google login setup:</p>
+    <ul>
+      <li>For android, edit values for <code class="language-plaintext highlighter-rouge">WEB_APPLICATION_CLIENT_ID</code> and <code class="language-plaintext highlighter-rouge">WEB_CLIENT_ID</code> placehodlers in package.json for google setup.</li>
+      <li>For iOS, edit values for <code class="language-plaintext highlighter-rouge">REVERSED_CLIENT_ID</code> (Regarding reverse client id: https://codesundar.com/create-reverse-client-id-for-google-login)</li>
+    </ul>
+
+    <p>In src/app/app.config.ts:</p>
+    <ul>
+      <li>Here change <code class="language-plaintext highlighter-rouge">appName</code>(name that displayes inside application)</li>
+      <li>Change <code class="language-plaintext highlighter-rouge">apiBase</code> with your base url. For example: http://yourbaseurl.com/</li>
+      <li>Change <code class="language-plaintext highlighter-rouge">googleApiKey</code> with the Browser key obtained in step 1.</li>
+      <li>Fill up <code class="language-plaintext highlighter-rouge">firebaseConfig</code> object details from your firebase console.</li>
+      <li>PayPal setup: Go to [https://developer.paypal.com/developer/applications/] and setup your sandbox or live app and copy client id, paste that in respective fields, i.e. “paypalSandbox” or “paypalProduction”. note: <code class="language-plaintext highlighter-rouge">paypalSandbox</code> will be ignored if <code class="language-plaintext highlighter-rouge">paypalProduction</code> is present in app.config.ts</li>
+      <li>Stripe setup: Go to https://dashboard.stripe.com/apikeys , create app if not created, copy test(starting as pk_test_) or live(starting as pk_live_) key and paste that in <code class="language-plaintext highlighter-rouge">stripeKey</code> field in app.config.ts</li>
+      <li>
+        <p>OneSignal setup: Go to https://app.onesignal.com/ , create or select your app, copy app id to paste in <code class="language-plaintext highlighter-rouge">oneSignalAppId</code> field. For field “oneSignalGPSenderId” paste in Sender ID from firebase console which was used in creation of OneSignal app. Note: you need to have seperate <code class="language-plaintext highlighter-rouge">oneSignalAppId</code> for Handyman Provider app, <code class="language-plaintext highlighter-rouge">oneSignalGPSenderId</code> will be same though.</p>
 
         <p>Your <strong>mywebapplicationclientid</strong> will look something like this <strong>511052243603-tti40jbrr3ukb2t3abebcesl5sd0ql099.apps.googleusercontent.com</strong>. We have already demonstrated above how to get this id.</p>
-      </li>
-    </ul>
 
-    <p><strong><code class="highlighter-rouge">Final Checklist</code></strong></p>
+        <p><strong><code class="language-plaintext highlighter-rouge">Final Checklist</code></strong></p>
 
-    <p>In summary, make sure you have followed all these steps before proceeding</p>
-    <ul>
-      <li>Added project in firebase</li>
-      <li>Added debug and release <strong>SHA-1 key</strong> in firebase</li>
-      <li>Downloaded <strong>google-services.json</strong> file from firebase and placed it in root folder of the app source code</li>
-      <li>Enabled <strong>Phone Authentication</strong> and <strong>Google</strong> in signin method in firebase</li>
-      <li>Updated all the required values in <strong>app.config.ts</strong></li>
-      <li>
-        <p>Installed <code class="highlighter-rouge">cordova-plugin-googleplus</code> cordova plugins</p>
-
-        <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; ionic cordova plugin add cordova-plugin-googleplus --save --variable WEB_APPLICATION_CLIENT_ID=mywebapplicationclientid
-
-&gt; npm install --save @ionic-native/google-plus
-</code></pre></div>        </div>
-      </li>
-    </ul>
-
-    <p><strong><code class="highlighter-rouge">Useful links</code></strong></p>
-    <ul>
-      <li>SHA-1 key related
+        <p>In summary, make sure you have followed all these steps before proceeding</p>
         <ul>
-          <li><a href="https://cloud.google.com/solutions/mobile/mobile-firebase-app-engine-flexible#generating_a_sha-1_fingerprint_for_the_app">https://cloud.google.com/solutions/mobile/mobile-firebase-app-engine-flexible#generating_a_sha-1_fingerprint_for_the_app</a></li>
-          <li><a href="https://developers.google.com/android/guides/client-auth">https://developers.google.com/android/guides/client-auth</a></li>
-          <li><a href="https://medium.com/pen-bold-kiln-press/sha-1-android-studio-ec02fb893e72">https://medium.com/pen-bold-kiln-press/sha-1-android-studio-ec02fb893e72</a></li>
+          <li>Added project in firebase</li>
+          <li>Added debug and release <strong>SHA-1 key</strong> in firebase</li>
+          <li>Downloaded <strong>google-services.json</strong> file from firebase and placed it in root folder of the app source code</li>
+          <li>Enabled <strong>Phone Authentication</strong>, <strong>Google</strong>, <strong>Facebook</strong>, <strong>Apple Signin</strong>(Only iOS 13) in signin method in firebase</li>
+          <li>Updated all the required values in <strong>app.config.ts</strong></li>
         </ul>
-      </li>
-      <li>Google login
+
+        <p><strong><code class="language-plaintext highlighter-rouge">Useful links</code></strong></p>
         <ul>
-          <li><a href="https://ionicframework.com/docs/native/google-plus/">https://ionicframework.com/docs/native/google-plus/</a></li>
+          <li>SHA-1 key related
+            <ul>
+              <li><a href="https://cloud.google.com/solutions/mobile/mobile-firebase-app-engine-flexible#generating_a_sha-1_fingerprint_for_the_app">https://cloud.google.com/solutions/mobile/mobile-firebase-app-engine-flexible#generating_a_sha-1_fingerprint_for_the_app</a></li>
+              <li><a href="https://developers.google.com/android/guides/client-auth">https://developers.google.com/android/guides/client-auth</a></li>
+              <li><a href="https://medium.com/pen-bold-kiln-press/sha-1-android-studio-ec02fb893e72">https://medium.com/pen-bold-kiln-press/sha-1-android-studio-ec02fb893e72</a></li>
+            </ul>
+          </li>
+          <li>Google login
+            <ul>
+              <li><a href="https://ionicframework.com/docs/native/google-plus/">https://ionicframework.com/docs/native/google-plus/</a></li>
+            </ul>
+          </li>
         </ul>
       </li>
     </ul>
@@ -396,17 +410,17 @@ Once you have followed all the steps given above you can build the app for andro
 
     <p>Once done, you can run following command to run the app on your Android device:</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &gt; ionic cordova run android
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &gt; ionic cordova run android
 </code></pre></div>    </div>
 
     <p>To build the apk, run:</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &gt; ionic cordova build android
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &gt; ionic cordova build android
 </code></pre></div>    </div>
 
     <p>Simillarly for iOS, you can run:</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &gt; ionic cordova build ios
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &gt; ionic cordova build ios
 </code></pre></div>    </div>
 
     <p>If you find the given information insufficient for you to successfully build or publish the app on app/play store. Please visit <a href="https://ionicframework.com/docs/intro/deploying/">https://ionicframework.com/docs/intro/deploying/</a> for indepth documentation.</p>
@@ -436,8 +450,8 @@ Please raise an issue ticket at this link <a href="https://opuslabs.freshdesk.co
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2019 Opus Labs. All rights reserved. <br />
- Site last generated: Mar 11, 2019 <br />
+               &copy;2020 Opus Labs. All rights reserved. <br />
+ Site last generated: Apr 19, 2020 <br />
 <p><img src="images/company_logo_dark.png" alt="Company logo"/></p>
                 </div>
             </div>
